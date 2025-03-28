@@ -1,7 +1,7 @@
 # Importação
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager, login_required
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user
 
 
 app = Flask(__name__)
@@ -27,6 +27,11 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=True)
 
+# Autenticação
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.get(int(user_id))
+
 @app.route('/login', methods=["POST"])
 def login():
     data = request.json
@@ -37,6 +42,13 @@ def login():
         login_user(user)
         return jsonify({"message": "Logged in sucessfully!"})
     return jsonify({"message" : "Unauthorized. Invalid credentials."}), 401
+
+
+@app.route('/logout', methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    return jsonify({"message": "Logout successfully!"})
 
 
 @app.route('/api/products/add', methods=["POST"])
