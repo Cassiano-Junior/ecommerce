@@ -180,5 +180,6 @@ def checkout():
         db.session.commit()
     return jsonify({"message" : "Checkout successfully. Cart has been cleared"})
 
+
 if __name__ == '__main__':
     app.run(debug=True)
